@@ -27,6 +27,22 @@ const getData = async (_, res) => {
 };
 
 const updateData = async (req, res) => {
-    
+  if (!client()) {
+    unprocessable(res, "Internal server error *", 500);
+  } else {
+    try {
+      await client().connect();
+      const data = req.body.data;
+      const updateOperations = data.map(({ id, price }) => ({
+        updateOne: { filter: { id }, update: { $set: { price } } },
+      }));
+      await client().db(dbName).collection("world").bulkWrite(updateOperations);
+      res.json({ message: "sucessfully updated" });
+    } catch (e) {
+      unprocessable(res, "Internal server error #", 500);
+    } finally {
+      await client().close();
+    }
+  }
 };
 module.exports = { getData, updateData };

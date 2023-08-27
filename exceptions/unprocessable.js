@@ -1,6 +1,6 @@
-const unprocessable = (res, message, status = 412) => {
-  res.status(status).json({
-    errors: [{ message }],
+const unprocessable = (res, message, status, errors) => {
+  res.status(status || 412).json({
+    errors: errors || [{ message }],
   });
 };
 
